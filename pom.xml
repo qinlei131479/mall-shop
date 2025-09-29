@@ -4,25 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.shop</groupId>
-	<artifactId>mall-shop-back</artifactId>
+	<artifactId>mall-shop</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<description>商城后台-微服务平台</description>
 
 	<!---父模块的打包方式-->
 	<packaging>pom</packaging>
-
-	<repositories>
-		<repository>
-			<id>gitee</id>
-			<url>https://gitee.com/tigshop-work/java-tigshop/raw/master</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<modules>
 		<module>tigshop-adminapi</module>
@@ -363,4 +350,16 @@
 		</pluginManagement>
 	</build>
 
+	<repositories>
+		<repository>
+			<id>gitee</id>
+			<url>https://gitee.com/tigshop-work/java-tigshop/raw/master</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>

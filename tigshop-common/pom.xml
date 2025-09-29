@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.shop</groupId>
-		<artifactId>mall-shop-back</artifactId>
+		<artifactId>mall-shop</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
