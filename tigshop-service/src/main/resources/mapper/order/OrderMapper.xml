@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tigshop.mapper.order.OrderMapper">
+
+
+    <select id="getSalesProductDetail" resultType="com.tigshop.bean.vo.panel.SalesProductOrderItemVO">
+            select *, (oi.quantity * oi.price) as subtotal
+            from order_item oi
+            left join `order` o on o.order_id = oi.order_id
+            <where>
+                o.is_del = 0
+                and o.add_time between #{pageQuery.startTimeStamp} and #{pageQuery.endTimeStamp}
+                and o.order_status in (#{pageQuery.orderStatues})
+                <if test="pageQuery.keyword != null and pageQuery.keyword != ''">
+                   and (oi.product_sn like concat('%',#{pageQuery.keyword},'%') or oi.product_name like concat('%',#{pageQuery.keyword},'%'))
+                </if>
+                <if test="pageQuery.shopId != null">
+                    and oi.shop_id = #{pageQuery.shopId}
+                </if>
+            </where>
+    </select>
+
+
+</mapper>

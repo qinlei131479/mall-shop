@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tigshop.mapper.vendor.product.VendorProductSkuAttrMapper">
+
+    <resultMap id="BaseResultMap" type="com.tigshop.bean.model.vendor.product.VendorProductSkuAttr">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="vendorProductId" column="vendor_product_id" jdbcType="INTEGER"/>
+            <result property="attrType" column="attr_type" jdbcType="TINYINT"/>
+            <result property="attrName" column="attr_name" jdbcType="VARCHAR"/>
+            <result property="attrValue" column="attr_value" jdbcType="VARCHAR"/>
+            <result property="attrPrice" column="attr_price" jdbcType="DECIMAL"/>
+            <result property="attrColor" column="attr_color" jdbcType="VARCHAR"/>
+            <result property="attrPic" column="attr_pic" jdbcType="VARCHAR"/>
+            <result property="attrPicThumb" column="attr_pic_thumb" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,vendor_product_id,attr_type,
+        attr_name,attr_value,attr_price,
+        attr_color,attr_pic,attr_pic_thumb
+    </sql>
+</mapper>

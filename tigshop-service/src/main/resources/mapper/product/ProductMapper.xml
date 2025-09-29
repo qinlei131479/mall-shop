@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tigshop.mapper.product.ProductMapper">
+
+    <select id="salesmanProducts" resultType="com.tigshop.bean.vo.salesman.SalesmanProductListVO">
+        select
+            p.*, sp.*, p.paid_content as paidContentJson
+        from product p
+        left join salesman_product sp on p.product_id = sp.product_id
+        <where>
+            p.is_delete = 0
+            <if test="pageQuery.shopId != null and pageQuery.shopId > 0">
+                and p.shop_id = #{pageQuery.shopId}
+            </if>
+            <if test="pageQuery.productName != null and pageQuery.productName != ''">
+                and (p.product_name like concat('%', #{pageQuery.productName}, '%') or p.product_sn like concat('%', #{pageQuery.productName}, '%'))
+            </if>
+            <if test="pageQuery.status != null">
+                and p.product_status = #{pageQuery.status}
+            </if>
+            <if test="pageQuery.salesmanProductType != null and pageQuery.salesmanProductType == 1">
+                and (sp.is_join = 0 or sp.is_join is null)
+            </if>
+            <if test="pageQuery.salesmanProductType != null and pageQuery.salesmanProductType == 2">
+                and sp.commission_type = 2
+            </if>
+            <if test="pageQuery.salesmanProductType != null and pageQuery.salesmanProductType == 3">
+                and sp.is_join = 1
+            </if>
+            <if test="pageQuery.salesmanProductType != null and pageQuery.salesmanProductType == 4">
+                and sp.commission_type = 3
+            </if>
+        </where>
+    </select>
+
+    <select id="searchProductIds" resultType="java.lang.Integer">
+        SELECT DISTINCT p.product_id
+        FROM product p
+                 LEFT JOIN translations_data t
+                           ON t.data_type = 2
+                               AND t.data_id = p.product_id
+                               AND t.locale_id = (
+                                   SELECT l.id
+                                   FROM locales l
+                                   WHERE l.locale_code = #{localeCode}
+                                   LIMIT 1
+                               )
+        WHERE t.translation_value LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tigshop.mapper.vendor.product.VendorProductAuditLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.tigshop.bean.model.vendor.product.VendorProductAuditLog">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="vendorProductId" column="vendor_product_id" jdbcType="BIGINT"/>
+            <result property="auditState" column="audit_state" jdbcType="TINYINT"/>
+            <result property="auditFailReason" column="audit_fail_reason" jdbcType="VARCHAR"/>
+            <result property="vendorId" column="vendor_id" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="BIGINT"/>
+            <result property="createById" column="create_by_id" jdbcType="BIGINT"/>
+            <result property="createByName" column="create_by_name" jdbcType="VARCHAR"/>
+            <result property="updateTime" column="update_time" jdbcType="BIGINT"/>
+            <result property="updateById" column="update_by_id" jdbcType="BIGINT"/>
+            <result property="updateByName" column="update_by_name" jdbcType="BIGINT"/>
+            <result property="isDel" column="is_del" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,vendor_product_id,audit_state,
+        audit_fail_reason,vendor_id,create_time,
+        create_by_id,create_by_name,update_time,
+        update_by_id,update_by_name,is_del
+    </sql>
+</mapper>

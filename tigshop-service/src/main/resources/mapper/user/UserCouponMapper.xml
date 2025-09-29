@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tigshop.mapper.user.UserCouponMapper">
+
+
+    <select id="listUserCouponList" resultType="com.tigshop.bean.vo.order.OrderCheckVO$Coupon">
+        SELECT
+            uc.coupon_id id,
+            c.coupon_name couponName,
+            c.coupon_type couponType,
+            c.min_order_amount minOrderAmount,
+            c.coupon_desc couponDesc,
+            c.coupon_money couponMoney,
+            c.is_global isGlobal,
+            c.coupon_discount couponDiscount,
+            c.shop_id shopId,
+            uc.end_date endDate,
+            uc.coupon_id couponId,
+            uc.id userCouponId
+        FROM
+            user_coupon uc
+        LEFT JOIN
+            coupon c ON uc.coupon_id = c.coupon_id
+        WHERE
+            uc.user_id = #{currentUserId}
+            AND c.shop_id = #{shopId}
+            AND uc.start_date &lt;= UNIX_TIMESTAMP(NOW())
+            AND uc.end_date >= UNIX_TIMESTAMP(NOW())
+            AND uc.order_id = 0
+            AND uc.used_time = 0;
+    </select>
+
+</mapper>

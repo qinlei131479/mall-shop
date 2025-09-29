@@ -1,0 +1,106 @@
+spring:
+  profiles:
+    active: dev
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    log-impl: ""
+
+# 滑块验证码
+aj:
+  captcha:
+    # 缓存类型
+    cache-type: redis
+    # blockPuzzle 滑块 clickWord 文字点选  default默认两者都实例化
+    type: blockPuzzle
+    # 右下角显示字
+    water-mark: tigshop
+    # 校验滑动拼图允许误差偏移量(默认5像素)
+    slip-offset: 5
+    # aes加密坐标开启或者禁用(true|false)
+    aes-status: true
+    # 滑动干扰项(0/1/2)
+    interference-options: 1
+
+# springdoc-openapi项目配置
+springdoc:
+  # API文档, 默认路径:swagger-ui.html
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  # 配置需要生成接口文档的扫描包路径
+  packages-to-scan: com.tigshop.adminapi.controller
+  group-configs:
+    - group: '权限组'
+      paths-to-match: '/adminapi/authority/**'
+    - group: '商户组'
+      paths-to-match: '/adminapi/merchant/**'
+    - group: '公共方法组'
+      paths-to-match: '/adminapi/common/**'
+    - group: '文章组'
+      paths-to-match: '/adminapi/content/**'
+    - group: '装修组'
+      paths-to-match: '/adminapi/decorate/**'
+    - group: '营销组'
+      paths-to-match: '/adminapi/promotion/**'
+    - group: '配置组'
+      paths-to-match: '/adminapi/setting/**'
+    - group: '分销组'
+      paths-to-match: '/adminapi/salesman/**'
+    - group: '会员组'
+      paths-to-match: '/adminapi/user/**'
+    - group: '财务组'
+      paths-to-match: '/adminapi/finance/**'
+    - group: '商品组'
+      paths-to-match: '/adminapi/product/**'
+    - group: '统计面板组'
+      paths-to-match: '/adminapi/panel/**'
+    - group: '多语言组'
+      paths-to-match: '/adminapi/lang/**'
+    - group: '登录组'
+      paths-to-match: '/adminapi/login/**'
+    - group: '订单组'
+      paths-to-match: '/adminapi/order/**'
+    - group: '消息管理组'
+      paths-to-match: '/adminapi/msg/**'
+#IM
+    - group: '会话和消息'
+      paths-to-match: '/im/conversation/**'
+    - group: '客服'
+      paths-to-match: '/im/servant/**'
+    - group: '配置'
+      paths-to-match: '/im/config/**'
+
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+logging:
+  level:
+    com.tigshop: warn
+    org.springframework: warn
+    org.apache.ibatis: debug
+
+tigshop:
+  name: TigShop
+  version: JAVA-B2C-PRO
+  version-num: v5.2.2
+  is-merchant: 0
+  is-b2b: 0
+  is-pro: 1
+  is-overseas: 0
+  is-vendor: 0
+  is-o2o: 0
+
+icoTigCss: https://at.alicdn.com/t/c/font_4441878_2rp6xtukhnh.css

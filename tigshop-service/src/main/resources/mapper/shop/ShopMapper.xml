@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tigshop.mapper.shop.ShopMapper">
+
+
+    <select id="storeListByLocation" resultType="com.tigshop.bean.vo.o2o.StoreListVO">
+        SELECT shop_id shopId,
+               shop_logo shopLogo,
+               status,
+               shop_detailed_address address,
+               shop_title shopTitle,
+               (
+                   6371000 * acos(
+                           cos(radians(#{query.latitude})) * cos(radians(shop_latitude))
+                               * cos(radians(shop_longitude) - radians(#{query.longitude}))
+                               + sin(radians(#{query.latitude})) * sin(radians(shop_latitude))
+                             )
+                   ) AS distance,
+               shop_longitude longitude,
+               shop_latitude latitude,
+               shop_contact_json contactJson,
+               shop_star shopStar,
+               shop_star_num shopStarNum,
+               description description,
+               shop_sales shopSales
+        FROM shop
+        WHERE shop_type = 2
+          AND ( status = 1 or status = 10)
+        <if test="query.regionId != null and query.regionId != ''">
+          AND shop_region_id  like CONCAT('%', #{query.regionId}, '%')
+        </if>
+        <if test="query.keyword != null and query.keyword != ''">
+            AND shop_title like CONCAT('%', #{query.keyword}, '%')
+        </if>
+        <if test="query.shopIds != null and query.shopIds.size() > 0">
+            AND shop_id IN
+            <foreach collection="query.shopIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        ORDER BY
+        <choose>
+            <when test="query.sortField == 'distance'">
+                distance IS NULL, distance
+            </when>
+            <otherwise>
+                shop_star
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="query.sortOrder == 'asc'">ASC</when>
+            <when test="query.sortOrder == 'desc'">DESC</when>
+            <otherwise>DESC</otherwise>
+        </choose>
+    </select>
+    <select id="storeListByRegion" resultType="com.tigshop.bean.vo.o2o.StoreListVO">
+        SELECT shop_id shopId,
+               shop_logo shopLogo,
+               status,
+               shop_detailed_address address,
+               shop_title shopTitle,
+               shop_longitude longitude,
+               shop_latitude latitude,
+               shop_contact_json contactJson,
+               shop_star shopStar,
+               shop_star_num shopStarNum,
+               description description,
+               shop_sales shopSales
+        FROM shop
+        WHERE shop_type = 2
+          AND ( status = 1 or status = 10)
+        <if test="query.regionId != null and query.regionId != ''">
+            AND shop_region_id  like CONCAT('%', #{query.regionId}, '%')
+        </if>
+        <if test="query.keyword != null and query.keyword != ''">
+            AND shop_title like CONCAT('%', #{query.keyword}, '%')
+        </if>
+        <if test="query.shopIds != null and query.shopIds.size() > 0">
+            AND shop_id IN
+            <foreach collection="query.shopIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        ORDER BY
+            shop_star
+        <choose>
+            <when test="query.sortOrder == 'asc'">ASC</when>
+            <when test="query.sortOrder == 'desc'">DESC</when>
+            <otherwise>DESC</otherwise>
+        </choose>
+    </select>
+    <select id="pickupListByLocation" resultType="com.tigshop.bean.vo.o2o.PickupListVO">
+        SELECT shop_id shopId,
+               shop_title shopTitle,
+               CASE
+                   WHEN #{query.latitude} IS NULL OR #{query.longitude} IS NULL
+                       THEN 0
+                   ELSE (6371000 * acos(
+                           cos(radians(#{query.latitude}))
+                               * cos(radians(shop_latitude))
+                               * cos(radians(shop_longitude) - radians(#{query.longitude}))
+                               + sin(radians(#{query.latitude}))
+                               * sin(radians(shop_latitude))
+                                   ))
+                   END AS distance,
+               shop_longitude longitude,
+               shop_latitude latitude,
+               shop_contact_json contactJson,
+               shop_open_close_json shopOpenCloseConfigJson,
+               shop_region_id shopRegionIdsJson,
+               shop_detailed_address address
+        FROM shop
+        WHERE shop_type = 3
+          AND status = 1
+          AND store_parent_id = #{query.shopId}
+        <if test="query.regionId != null and query.regionId != ''">
+            AND shop_region_id  like CONCAT('%', #{query.regionId}, '%')
+        </if>
+        <if test="query.keyword != null and query.keyword != ''">
+          AND shop_detailed_address like CONCAT('%', #{query.keyword}, '%')
+        </if>
+        ORDER BY
+            CASE
+                WHEN #{query.latitude} IS NULL OR #{query.longitude} IS NULL
+                    THEN shop_id
+                ELSE distance
+                END ASC
+    </select>
+
+    <select id="storeListByProductId" resultType="com.tigshop.bean.vo.o2o.StoreListVO">
+        SELECT shop_id shopId,
+        shop_logo shopLogo,
+        status,
+        shop_detailed_address address,
+        shop_title shopTitle,
+        0 AS distance,
+        shop_longitude longitude,
+        shop_latitude latitude,
+        shop_contact_json contactJson,
+        shop_star shopStar,
+        shop_sales shopSales
+        FROM shop s
+        left join store_product sp on s.shop_id = sp.shop_id
+        WHERE shop_type = 2
+        AND status = 1
+        AND shop_region_id  like CONCAT('%', #{query.regionId}, '%')
+        <if test="query.keyword != null and query.keyword != ''">
+            AND shop_title like CONCAT('%', #{query.keyword}, '%')
+        </if>
+        <if test="query.productId != null and query.productId != ''">
+            AND sp.product_id = #{query.productId}
+        </if>
+        ORDER BY
+        <choose>
+            <when test="query.sortField == 'distance'">
+                distance
+            </when>
+            <otherwise>
+                shop_star
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="query.sortOrder == 'asc'">ASC</when>
+            <when test="query.sortOrder == 'desc'">DESC</when>
+            <otherwise>DESC</otherwise>
+        </choose>
+    </select>
+</mapper>

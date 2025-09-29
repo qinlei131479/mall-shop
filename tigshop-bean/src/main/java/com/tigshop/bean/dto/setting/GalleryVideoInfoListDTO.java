@@ -1,0 +1,17 @@
+package com.tigshop.bean.dto.setting;
+
+import com.tigshop.common.core.entity.BasePage;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * @author wzh
+ */
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Schema(description = "视频相册信息查询参数")
+public class GalleryVideoInfoListDTO extends BasePage {
+    @Schema(description = "相册id")
+    private Integer id;
+}

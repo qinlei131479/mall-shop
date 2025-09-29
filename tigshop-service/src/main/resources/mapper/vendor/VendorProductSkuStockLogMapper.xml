@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tigshop.mapper.vendor.product.VendorProductSkuStockLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.tigshop.bean.model.vendor.product.VendorProductSkuStockLog">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="vendorProductId" column="vendor_product_id" jdbcType="INTEGER"/>
+            <result property="vendorProductSkuId" column="vendor_product_sku_id" jdbcType="INTEGER"/>
+            <result property="operationType" column="operation_type" jdbcType="INTEGER"/>
+            <result property="beforeStock" column="before_stock" jdbcType="INTEGER"/>
+            <result property="changeNum" column="change_num" jdbcType="INTEGER"/>
+            <result property="afterStock" column="after_stock" jdbcType="INTEGER"/>
+            <result property="bizType" column="biz_type" jdbcType="SMALLINT"/>
+            <result property="bizRemark" column="biz_remark" jdbcType="VARCHAR"/>
+            <result property="vendorId" column="vendor_id" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="BIGINT"/>
+            <result property="createById" column="create_by_id" jdbcType="BIGINT"/>
+            <result property="createByName" column="create_by_name" jdbcType="VARCHAR"/>
+            <result property="updateTime" column="update_time" jdbcType="BIGINT"/>
+            <result property="updateById" column="update_by_id" jdbcType="BIGINT"/>
+            <result property="updateByName" column="update_by_name" jdbcType="BIGINT"/>
+            <result property="isDel" column="is_del" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,vendor_product_id,vendor_product_sku_id,
+        operation_type,before_stock,change_num,
+        after_stock,biz_type,biz_remark,
+        vendor_id,create_time,create_by_id,
+        create_by_name,update_time,update_by_id,
+        update_by_name,is_del
+    </sql>
+</mapper>
