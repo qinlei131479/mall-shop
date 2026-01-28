@@ -1,0 +1,225 @@
+.info-row {
+    margin: 10px 0;
+    width: 986px;
+    a {
+        cursor: pointer;
+    }
+    .title-or-tabs {
+        .tag-and-input {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+
+            .tig-font-style {
+                font-size: 14px;
+            }
+        }
+    }
+    .title-or-tabs {
+        background: #fff;
+        border: 0;
+        padding: 16px 20px;
+        margin-bottom: 10px;
+        display: flex;
+
+        & > span {
+            color: #333333;
+            font-size: 16px;
+            font-weight: 400;
+            letter-spacing: 0;
+            display: inline-block;
+        }
+
+        .collection-list-tag {
+            border: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            line-height: 32px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    }
+
+    .page-info-body {
+        padding: 20px;
+        background: #fff;
+        border: 0;
+        box-sizing: border-box;
+
+        //订单表头的样式
+        .order-title {
+            margin: 10px 0;
+            background: #f3f3f3;
+            height: 42px;
+            display: flex;
+            align-items: center;
+
+            & > .ul {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                width: 100%;
+                height: 42px;
+                font-weight: 600;
+                text-align: center;
+            }
+        }
+    }
+
+    .img-border {
+        border: 1px solid #e8e8e8;
+        padding: 1px;
+        box-sizing: border-box;
+    }
+}
+
+//页面带数字的跳转tabs
+.tig-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .tab {
+        margin-right: 30px;
+        position: relative;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+
+        .sub {
+            position: absolute;
+            background-color: var(--general);
+            color: white;
+            font-size: 10px;
+            height: 16px;
+            line-height: 16px;
+            min-width: 12px;
+            padding: 0 3px;
+            border-radius: 12px;
+            text-align: center;
+            top: -5px;
+            right: -18px;
+        }
+
+        & > span {
+            position: absolute;
+            background-color: var(--general);
+            color: white;
+            font-size: 10px;
+            height: 16px;
+            line-height: 16px;
+            min-width: 12px;
+            padding: 0 3px;
+            border-radius: 12px;
+            text-align: center;
+            top: -5px;
+            right: -18px;
+        }
+
+        &:hover {
+            color: var(--general);
+            transition: transform 0.3s;
+        }
+    }
+}
+
+.active {
+    color: var(--general) !important;
+    border-bottom: 3px solid var(--general) !important;
+
+    & > a {
+        color: var(--general) !important;
+    }
+}
+
+/* 步骤条 */
+.tig-steps {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    padding: 50px;
+    box-sizing: border-box;
+
+    .steps-card {
+        height: 18px;
+        width: 18px;
+        position: relative;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .steps-line {
+        flex: 1;
+        height: 4px;
+    }
+
+    .card-text {
+        color: #2abf5c;
+        position: absolute;
+        width: 200px;
+        height: 50px;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+    }
+}
+.extra {
+    display: flex;
+    color: #999999;
+    width: 100%;
+    font-size: 12px;
+}
+//查询无结果
+.no-result {
+    height: 300px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    gap: 10px;
+
+    .sign {
+        background: #fff url("/assets/images/signs.png") no-repeat scroll 0 -150px;
+        display: inline-block;
+        height: 40px;
+        width: 41px;
+    }
+
+    .tip-message {
+        margin-left: 10px;
+        line-height: 2;
+    }
+}
+
+.el-page {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.big-button {
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    line-height: 42px;
+    width: 218px;
+    height: 42px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.ml10 {
+    margin-left: 10px;
+}
+
+.font-color {
+    color: var(--general);
+}
