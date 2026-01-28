@@ -1,0 +1,497 @@
+<template>
+    <div class="container">
+        <div class="content_wrapper">
+            <div class="container">
+                <div class="lyecs-table-list-warp">
+                    <TigTabs v-model="filterParams.status" :tabs="shopStatus" @onTabChange="onChange"></TigTabs>
+                    <div class="list-table-tool lyecs-search-warp">
+                        <div class="advanced-search-warp list-table-tool-row">
+                            <div class="simple-form-warp">
+                                <div class="simple-form-field">
+                                    <div class="form-group">
+                                        <label class="control-label"><span>自提点：</span></label>
+                                        <div class="control-container">
+                                            <TigInput
+                                                v-model="filterParams.keyword"
+                                                name="keyword"
+                                                placeholder="输入自提点名称"
+                                                @keyup.enter="onSearchSubmit"
+                                                clearable
+                                                @clear="onSearchSubmit"
+                                            >
+                                                <template #append>
+                                                    <el-button @click="onSearchSubmit"><span class="iconfont icon-chakan1"></span></el-button>
+                                                </template>
+                                            </TigInput>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="simple-form-field">
+                                    <div class="form-group">
+                                        <label class="control-label"><span>关联账号：</span></label>
+                                        <div class="control-container">
+                                            <TigInput
+                                                v-model="filterParams.account"
+                                                name="account"
+                                                placeholder="输入关联账号名称"
+                                                @keyup.enter="onSearchSubmit"
+                                                clearable
+                                                @clear="onSearchSubmit"
+                                            >
+                                            </TigInput>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-if="getAdminType() == 'admin' && isMerchant()" class="simple-form-field">
+                                    <div class="form-group">
+                                        <label class="control-label"><span>上级组织：</span></label>
+                                        <div class="control-container">
+                                            <SelectStore v-model:storeId="filterParams.storeParentId" @onChange="onSearchSubmit"></SelectStore>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="simple-form-field">
+                                    <div class="form-group">
+                                        <label class="control-label"><span>主账号：</span></label>
+                                        <div class="control-container">
+                                            <TigInput
+                                                v-model="filterParams.mainAccount"
+                                                name="mainAccount"
+                                                placeholder="输入主账号名称"
+                                                @keyup.enter="onSearchSubmit"
+                                                clearable
+                                                @clear="onSearchSubmit"
+                                            >
+                                            </TigInput>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="simple-form-field">
+                                    <div class="form-group">
+                                        <label class="control-label"><span>创建时间：</span></label>
+                                        <SelectTimeInterval
+                                            type="date"
+                                            v-model:start-date="filterParams.addStartTime"
+                                            v-model:end-date="filterParams.addEndTime"
+                                        ></SelectTimeInterval>
+                                    </div>
+                                </div>
+                                <!-- <div class="simple-form-field">
+                                    <div class="form-group">
+                                        <label class="control-label"><span>状态 ：</span></label>
+                                        <div class="control-container">
+                                            <el-select v-model="filterParams.status" clearable @change="onSearchSubmit">
+                                                <el-option v-for="value in shopStatus" :label="value.label" :value="value.value" />
+                                            </el-select>
+                                        </div>
+                                    </div>
+                                </div> -->
+
+                                <div class="simple-form-warp">
+                                    <div class="simple-form-field">
+                                        <label class="control-label"></label>
+                                        <div class="control-container">
+                                            <el-button type="primary" plain @click="onSearchSubmit">搜索</el-button>
+                                            <el-button plain @click="resetParams">重置</el-button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-table-tool-row mt20">
+                            <div class="list-table-tool-col">
+                                <el-space>
+                                    <DialogForm
+                                        ref="dialogForm"
+                                        :params="{ act: 'add', id: merchantId }"
+                                        isDrawer
+                                        path="store/adminPages/selfPackManage/Info"
+                                        title="新增自提点"
+                                        width="950px"
+                                        @closeCallback="closeCallback"
+                                        @okCallback="okCallback"
+                                    >
+                                        <el-button type="primary">新增自提点</el-button>
+                                    </DialogForm>
+                                </el-space>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <a-spin :spinning="loading">
+                            <el-table
+                                :data="filterState"
+                                :loading="loading"
+                                :total="total"
+                                row-key="shopId"
+                                @selection-change="onSelectChange"
+                                @sort-change="onSortChange"
+                            >
+                                <!-- <el-table-column type="selection" width="32" /> -->
+                                <el-table-column label="自提点名称">
+                                    <template #default="{ row }">
+                                        {{ row.shopTitle || "--" }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="自提点LOGO">
+                                    <template #default="{ row }">
+                                        <Image :src="row.shopLogo" fit="contain" style="height: 25px; width: 60px" />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="上级组织" :width="200">
+                                    <template #default="{ row }">
+                                        <div>
+                                            <span>{{ row.storeParentName || "--" }}</span>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="地址" :width="200">
+                                    <template #default="{ row }">
+                                        <div>
+                                            <span v-if="row.shopRegionNames && row.shopRegionNames.length > 0">{{ row.shopRegionNames.join("") }}{{ row.shopDetailedAddress || "--" }}</span>
+                                            <span v-else>--</span>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="自提点状态" prop="status" sortable="custom">
+                                    <template #default="{ row }">
+                                        <template v-if="row.status == 10">
+                                            <StatusDot color="red" :flicker="true"></StatusDot>
+                                        </template>
+                                        <template v-if="row.status == 4">
+                                            <StatusDot color="red" :flicker="true"></StatusDot>
+                                        </template>
+                                        <template v-if="row.status == 1">
+                                            <StatusDot color="green" :flicker="true"></StatusDot>
+                                        </template>
+                                        <span v-if="row.status === 10 || row.status === 4" style="color: red">{{ row.statusText }}</span>
+                                        <span v-else-if="row.status === 1" style="color: green">{{ row.statusText }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="创建时间" prop="addTime" sortable="custom">
+                                    <template #default="{ row }">
+                                        {{ row.addTime }}
+                                    </template>
+                                </el-table-column>
+                                <!-- <el-table-column label="主账号" align="center">
+                                    <template #default="{ row }">
+                                        <div v-if="row.merchant && row.merchant.admin">
+                                            <DialogForm
+                                                :params="{ id: row.shopId, type: 'shop' }"
+                                                isDrawer
+                                                path="authority/accountManage/Detail"
+                                                title="主账号管理"
+                                                width="900px"
+                                                @okCallback="loadFilter"
+                                            >
+                                                <a>{{ row.merchant.admin.username || "--" }}</a>
+                                            </DialogForm>
+                                        </div>
+                                        <div v-else>--</div>
+                                    </template>
+                                </el-table-column> -->
+                                <el-table-column :width="180" fixed="right" label="操作">
+                                    <template #default="{ row }">
+                                        <el-space :size="0">
+                                            <DialogForm
+                                                :params="{ act: 'detail', id: row.shopId }"
+                                                isDrawer
+                                                path="store/adminPages/selfPackManage/Info"
+                                                title="编辑自提点"
+                                                width="950px"
+                                                @okCallback="loadFilter"
+                                            >
+                                                <a class="btn-link">编辑</a>
+                                            </DialogForm>
+                                            <el-divider direction="vertical" />
+                                            <DialogForm
+                                                :params="{ id: row.shopId, type: 'pickup' }"
+                                                isDrawer
+                                                path="authority/accountManage/Detail"
+                                                title="主账号管理"
+                                                width="900px"
+                                                @okCallback="loadFilter"
+                                            >
+                                                <el-button style="width: 100%" link type="primary">主账号管理</el-button>
+                                            </DialogForm>
+                                            <!-- <a :href="getShopLink('shop', row.shopId)" target="_blank" class="btn-link">自提点首页</a> -->
+                                            <!-- <el-divider direction="vertical" /> -->
+                                            <!-- <el-dropdown>
+                                                <el-icon class="btn-link" size="12"><MoreFilled /></el-icon>
+                                                <template #dropdown>
+                                                    <el-dropdown-menu>
+                                                        <el-dropdown-item>
+                                                            <DialogForm
+                                                                :params="{ id: row.shopId, type: 'shop' }"
+                                                                isDrawer
+                                                                path="authority/accountManage/Detail"
+                                                                title="主账号管理"
+                                                                width="900px"
+                                                                @okCallback="loadFilter"
+                                                            >
+                                                                <el-button style="width: 100%" link type="primary">主账号管理</el-button>
+                                                            </DialogForm>
+                                                        </el-dropdown-item>
+                                                    </el-dropdown-menu>
+                                                </template>
+                                            </el-dropdown> -->
+                                        </el-space>
+                                    </template>
+                                </el-table-column>
+                                <template #empty>
+                                    <div class="empty-warp">
+                                        <div v-if="!loading" class="empty-bg">暂无数据</div>
+                                    </div>
+                                </template>
+                            </el-table>
+                        </a-spin>
+                        <div v-if="total > 0" class="pagination-con">
+                            <Pagination v-model:page="filterParams.page" v-model:size="filterParams.size" :total="total" @callback="loadFilter" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script lang="ts" setup>
+import "@/style/css/list.less";
+import { MoreFilled } from "@element-plus/icons-vue";
+import { DialogForm } from "@/components/dialog";
+import { onMounted, reactive, ref } from "vue";
+import { DeleteRecord, Pagination } from "@/components/list";
+import { Image } from "@/components/image";
+import { message } from "ant-design-vue";
+import { useConfigStore } from "@/store/config";
+import { ShopFilterParams, ShopFilterState } from "@/types/shop/shop.d";
+import { batchSubmit, getShopList, updateShopFiled } from "@/api/shop/shop";
+import { ElMessageBox } from "element-plus";
+import { getShopLink } from "@/utils/util";
+import { useRouter } from "vue-router";
+import StatusDot from "@/components/form/src/StatusDot.vue";
+import { useListRequest } from "@/hooks/useListRequest";
+import { SelectStore } from "@/components/select";
+import { SelectTimeInterval } from "@/components/select";
+import { getDays } from "@/utils/util";
+import { formattedDate } from "@/utils/time";
+import { getAdminType } from "@/utils/storage";
+import { isB2b, isMerchant, isOverseas, isS2b2c } from "@/utils/version";
+const shopStatus = ref<any[]>([
+    {
+        label: "全部",
+        value: "",
+        isShow: true
+    },
+    {
+        label: "启用",
+        value: 1,
+        isShow: true
+    },
+    {
+        label: "禁用",
+        value: 10,
+        isShow: true
+    }
+]);
+const query = useRouter().currentRoute.value.query;
+const config: any = useConfigStore();
+const {
+    listData: filterState,
+    loading,
+    total,
+    selectedIds,
+    filterParams,
+    loadData: loadFilter,
+    onSearchSubmit,
+    onSortChange,
+    onSelectChange,
+    onBatchAction,
+    resetParams
+} = useListRequest<ShopFilterState, ShopFilterParams>({
+    apiFunction: getShopList,
+    idKey: "shopId",
+    defaultParams: {
+        shopType: 3,
+        storeParentId: "",
+        sortField: "",
+        sortOrder: "",
+        keyword: "",
+        account: (query.account as string) || "",
+        mainAccount: "",
+        status: "",
+        page: 1,
+        addStartTime: "",
+        addEndTime: "",
+        size: config.get("pageSize")
+    }
+});
+// 批量操作
+const onBatchSubmit = async (action: string) => {
+    await onBatchAction(action, batchSubmit);
+};
+
+// 初始化加载
+loadFilter();
+useRouter().replace({ query: {} });
+const onChange = (status: number) => {
+    filterParams.status = status;
+    filterParams.page = 1;
+    loadFilter();
+};
+const handleSwitchChange = (params: any) => {
+    const { data, row } = params;
+    ElMessageBox.confirm("确认修改当前自提点的开业状态吗?", "提示", { confirmButtonText: "确认", cancelButtonText: "取消", type: "warning" })
+        .then(() => {
+            row.status = row.status == 1 ? 10 : 1;
+            const result = updateShopFiled({ ...data, id: row.shopId, val: row.status });
+            message.success("修改成功");
+        })
+        .catch(() => {});
+};
+const okCallback = () => {
+    clearUrlParams();
+    loadFilter();
+};
+const clearUrlParams = () => {
+    // 获取当前页面的完整URL
+    let currentUrl = window.location.href;
+    // 使用URL对象解析当前URL
+    let urlObj = new URL(currentUrl);
+    // 清除查询字符串
+    urlObj.search = "";
+    // 将修改后的URL设置为当前页面的URL
+    window.history.replaceState({}, document.title, urlObj.toString());
+};
+const dialogForm = ref<any>();
+const merchantId = ref<number>(0);
+onMounted(() => {
+    if (query.id) {
+        ElMessageBox.confirm(`为[${query.companyName || "--"}]立即创建自提点?`, "提示", {
+            closeOnClickModal: false,
+            showClose: false,
+            confirmButtonText: "确认",
+            cancelButtonText: "取消",
+            type: "warning"
+        })
+            .then(() => {
+                merchantId.value = Number(query.id);
+                dialogForm.value.show();
+            })
+            .catch(() => {
+                merchantId.value = 0;
+                clearUrlParams();
+            });
+    }
+});
+const closeCallback = () => {
+    merchantId.value = 0;
+    clearUrlParams();
+};
+</script>
+<style lang="less" scoped>
+.status-switch {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 150px;
+}
+
+.status-switch > div {
+    word-break: keep-all;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.display-col {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    gap: 8px;
+
+    .image {
+        width: 30px;
+        height: 30px;
+
+        .image-style {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 保持图片比例 */
+        }
+    }
+
+    .image_comment {
+        min-width: 50px;
+        min-height: 50px;
+        max-width: 50px;
+        max-height: 50px;
+
+        .image-style {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 保持图片比例 */
+        }
+    }
+
+    .text {
+        flex-grow: 1; /* 占据剩余空间 */
+        white-space: nowrap; /* 不换行 */
+        overflow: hidden; /* 隐藏超出部分 */
+        text-overflow: ellipsis; /* 超出显示省略号 */
+        margin-left: 8px; /* 与左侧图片的间距 */
+    }
+
+    .text_comment {
+        flex-grow: 1; /* 占据剩余空间 */
+    }
+}
+
+.multiline_hiding {
+    height: 3.6em; /* 基于字体大小的高度, 3行文本高度 */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* 限制在3行 */
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    line-height: 1.2em; /* 调整这个值以匹配你的字体大小 */
+}
+
+.green {
+    margin-left: 8px;
+    color: green !important;
+}
+
+.grey {
+    margin-left: 8px;
+    color: #999 !important;
+}
+
+.tabs {
+    flex-wrap: wrap;
+    gap: 10px !important;
+    margin-left: 10px;
+
+    .item {
+        padding: 0px 10px;
+        text-align: center;
+        height: 25px;
+        line-height: 25px;
+        color: #333;
+        margin-right: 5px;
+        font-size: 14px;
+        border-radius: 2px;
+        border: 1px solid #fff;
+        cursor: pointer;
+
+        &:hover {
+            color: var(--tig-primary);
+        }
+    }
+
+    .active {
+        color: var(--tig-primary);
+        background: var(--tig-item-active-bg);
+        border: 1px solid var(--tig-primary);
+    }
+}
+</style>
